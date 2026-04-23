@@ -33,6 +33,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Check-in Display Window
+    |--------------------------------------------------------------------------
+    |
+    | Kiosk should keep recently started bookings visible for a short grace
+    | period (minutes) to allow late check-ins.
+    |
+    */
+    'checkin_past_grace_minutes' => (int) env('CHECKIN_PAST_GRACE_MINUTES', 60),
+
+    /*
+    |--------------------------------------------------------------------------
     | Sync Window
     |--------------------------------------------------------------------------
     |

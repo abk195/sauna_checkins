@@ -13,8 +13,7 @@ class BookingController extends Controller
 {
     public function __construct(
         protected BookingCheckInService $checkInService
-    ) {
-    }
+    ) {}
 
     /**
      * Today's bookable bookings (local DB only), optionally filtered by manifest and "upcoming" window.
@@ -32,20 +31,25 @@ class BookingController extends Controller
             $query->where('manifest_id', $request->query('manifest_id'));
         }
 
-        // Default false: show all of today's bookings (kiosk needs late check-ins too).
+        // Default false: show current + upcoming and keep a short grace period for late arrivals.
         // Pass upcoming_only=true to limit to slot start >= now.
         $upcomingOnly = $request->boolean('upcoming_only', false);
+        $pastGraceMinutes = (int) config('periode.checkin_past_grace_minutes', 60);
+        $now = Carbon::now($tz);
+        $cutoff = $now->copy()->subMinutes(max($pastGraceMinutes, 0));
 
         $bookings = $query->get();
 
         if ($upcomingOnly) {
-            $now = Carbon::now($tz);
             $bookings = $bookings
                 ->filter(fn (Booking $b) => $b->startsAt()->greaterThanOrEqualTo($now))
                 ->sortBy(fn (Booking $b) => $b->startsAt()->timestamp)
                 ->values();
         } else {
-            $bookings = $bookings->sortBy(fn (Booking $b) => $b->startsAt()->timestamp)->values();
+            $bookings = $bookings
+                ->filter(fn (Booking $b) => $b->startsAt()->greaterThanOrEqualTo($cutoff))
+                ->sortBy(fn (Booking $b) => $b->startsAt()->timestamp)
+                ->values();
         }
 
         $data = $bookings->map(fn (Booking $b) => [
