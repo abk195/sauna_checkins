@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Manifest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,6 +15,7 @@ class BookingController extends Controller
     {
         $request->validate([
             'state' => ['nullable', 'string', 'max:255'],
+            'manifest_id' => ['nullable', 'string', 'max:255'],
             'payment_type' => ['nullable', 'string', 'max:255'],
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date'],
@@ -34,6 +36,10 @@ class BookingController extends Controller
 
         if ($request->filled('payment_type')) {
             $query->where('payment_type', $request->string('payment_type'));
+        }
+
+        if ($request->filled('manifest_id')) {
+            $query->where('manifest_id', $request->string('manifest_id'));
         }
 
         if ($request->filled('date_from')) {
@@ -64,8 +70,11 @@ class BookingController extends Controller
             ->orderBy('payment_type')
             ->pluck('payment_type');
 
+        $manifestOptions = Manifest::query()->orderBy('name')->get();
+
         $filters = [
             'state' => (string) $request->input('state', ''),
+            'manifest_id' => (string) $request->input('manifest_id', ''),
             'payment_type' => (string) $request->input('payment_type', ''),
             'date_from' => (string) $request->input('date_from', ''),
             'date_to' => (string) $request->input('date_to', ''),
@@ -74,6 +83,7 @@ class BookingController extends Controller
         return view('admin.bookings.index', compact(
             'bookings',
             'stateOptions',
+            'manifestOptions',
             'paymentOptions',
             'filters'
         ));

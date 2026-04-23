@@ -12,6 +12,17 @@
     <form method="get" action="{{ route('admin.bookings.index') }}" class="filter-bar card" style="margin-bottom: 1.25rem;">
         <div class="filter-bar__grid">
             <div class="field" style="margin-bottom: 0;">
+                <label for="filter_manifest">Manifest</label>
+                <select id="filter_manifest" name="manifest_id">
+                    <option value="" @selected(old('manifest_id', $filters['manifest_id'] ?? '') === '')>All manifests</option>
+                    @foreach ($manifestOptions as $m)
+                        <option value="{{ $m->manifest_id }}" @selected(old('manifest_id', $filters['manifest_id'] ?? '') === $m->manifest_id)>
+                            {{ $m->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="field" style="margin-bottom: 0;">
                 <label for="filter_state">State</label>
                 <select id="filter_state" name="state">
                     <option value="" @selected(old('state', $filters['state'] ?? '') === '')>All states</option>
