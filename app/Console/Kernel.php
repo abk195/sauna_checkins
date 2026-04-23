@@ -12,8 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Run booking sync every five minutes.
-        $schedule->command('bookings:sync')->everyFiveMinutes();
+        // Run booking sync every hour.
+        $schedule->command('bookings:sync')->hourly();
     }
 
     /**
