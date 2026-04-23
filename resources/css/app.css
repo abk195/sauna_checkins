@@ -1,0 +1,16 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body.checkin-body {
+    margin: 0;
+    min-height: 100vh;
+    width: 100%;
+}
+
+body.checkin-body #app {
+    width: 100%;
+    min-height: 100vh;
+}
