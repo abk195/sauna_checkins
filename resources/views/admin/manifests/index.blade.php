@@ -22,6 +22,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Manifest ID</th>
+                        <th>Sauna</th>
                         <th>Kiosk URL</th>
                         <th></th>
                     </tr>
@@ -31,6 +32,13 @@
                         <tr>
                             <td>{{ $m->name }}</td>
                             <td><code style="font-size:0.85em;">{{ $m->manifest_id }}</code></td>
+                            <td>
+                                @if ($m->sauna)
+                                    {{ $m->sauna->name }}
+                                @else
+                                    <span style="color:var(--muted);font-size:0.85em;">— Unassigned —</span>
+                                @endif
+                            </td>
                             <td>
                                 <code style="font-size:0.75em;word-break:break-all;line-height:1.4;display:block;max-width:28rem;">{{ route('checkin.manifest', ['manifest_id' => $m->manifest_id]) }}</code>
                             </td>

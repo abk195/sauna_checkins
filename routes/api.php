@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\BookingController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\API\SaunaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,3 +18,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/bookings/today', [BookingController::class, 'today']);
 Route::post('/bookings/{bookingId}/check-in', [BookingController::class, 'checkIn'])
     ->where('bookingId', '[A-Za-z0-9_-]+');
+
+Route::get('/sauna/{sauna:slug}/active', [SaunaController::class, 'active']);

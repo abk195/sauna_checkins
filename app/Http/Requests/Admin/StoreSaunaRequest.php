@@ -5,7 +5,7 @@ namespace App\Http\Requests\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateManifestRequest extends FormRequest
+class StoreSaunaRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -17,17 +17,22 @@ class UpdateManifestRequest extends FormRequest
      */
     public function rules(): array
     {
-        $manifest = $this->route('manifest');
-
         return [
-            'manifest_id' => [
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('manifests', 'manifest_id')->ignore($manifest->id),
+                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+                Rule::unique('saunas', 'slug'),
             ],
-            'name' => ['required', 'string', 'max:255'],
-            'sauna_id' => ['nullable', 'integer', 'exists:saunas,id'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'slug.regex' => 'Slug must be lowercase letters, numbers, and dashes only (e.g. sauna-a).',
         ];
     }
 }

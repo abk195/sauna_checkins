@@ -8,6 +8,10 @@
         <meta name="checkin-manifest-id" content="{{ $manifestId }}">
         <meta name="checkin-manifest-name" content="{{ $manifestName ?? '' }}">
     @endisset
+    @isset($saunaSlug)
+        <meta name="checkin-sauna-slug" content="{{ $saunaSlug }}">
+        <meta name="checkin-sauna-name" content="{{ $saunaName ?? '' }}">
+    @endisset
     <title>{{ config('app.name', 'Sauna Bookings') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

@@ -19,6 +19,7 @@ class StoreManifestRequest extends FormRequest
         return [
             'manifest_id' => ['required', 'string', 'max:255', 'unique:manifests,manifest_id'],
             'name' => ['required', 'string', 'max:255'],
+            'sauna_id' => ['nullable', 'integer', 'exists:saunas,id'],
         ];
     }
 }

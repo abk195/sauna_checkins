@@ -1,11 +1,13 @@
 <?php
 
-use App\Http\Controllers\CheckinManifestController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\CheckinUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ManifestController;
+use App\Http\Controllers\Admin\SaunaController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CheckinManifestController;
+use App\Http\Controllers\SaunaCheckinController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +24,9 @@ Route::get('/checkin', function () {
 
 Route::get('/manifest/{manifest_id}', CheckinManifestController::class)
     ->name('checkin.manifest');
+
+Route::get('/sauna/{sauna:slug}', SaunaCheckinController::class)
+    ->name('checkin.sauna');
 
 Route::get('/welcome', function () {
     return view('welcome');
@@ -46,5 +51,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
         Route::get('/checkin-users', [CheckinUserController::class, 'index'])->name('checkin-users.index');
         Route::resource('manifests', ManifestController::class)->except(['show']);
+        Route::resource('saunas', SaunaController::class)->except(['show']);
     });
 });

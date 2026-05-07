@@ -1,7 +1,7 @@
 <template>
     <div class="board">
         <header class="board__header">
-            <h1 class="board__title">Sauna Bookings</h1>
+            <h1 class="board__title">{{ headerTitle }}</h1>
             <p class="board__date">{{ todayLabel }}</p>
             <p v-if="manifestLabel" class="board__subtitle">{{ manifestLabel }}</p>
         </header>
@@ -46,8 +46,13 @@ const error = ref('');
 const checkingId = ref(null);
 
 const manifestId = ref(null);
-/** Display name from DB when opened via /manifest/{id} */
+/** Display name from DB when opened via /manifest/{id} or /sauna/{slug} (auto-rotates). */
 const manifestName = ref(null);
+
+const saunaSlug = ref(null);
+const saunaName = ref(null);
+
+const headerTitle = computed(() => saunaName.value || 'Sauna Bookings');
 
 const manifestLabel = computed(() => {
     if (manifestName.value) {
@@ -82,11 +87,23 @@ const todayLabel = computed(() => {
 });
 
 /**
- * Manifest filter: meta (from /manifest/{id} Blade) > path /manifest/... > ?manifest_id=
- * Home /checkin has no meta — shows all bookings.
+ * Source priority:
+ *   1) sauna meta (/sauna/{slug})  — iPad mode, polls /api/sauna/{slug}/active
+ *   2) manifest meta (/manifest/{id}) — fixed manifest
+ *   3) /manifest/{id} path
+ *   4) ?manifest_id= query
+ *   5) Home /checkin — all bookings
  */
 function readManifestContext() {
     manifestName.value = null;
+
+    const saunaMetaSlug = document.querySelector('meta[name="checkin-sauna-slug"]')?.getAttribute('content')?.trim();
+    const saunaMetaName = document.querySelector('meta[name="checkin-sauna-name"]')?.getAttribute('content')?.trim();
+    if (saunaMetaSlug) {
+        saunaSlug.value = saunaMetaSlug;
+        saunaName.value = saunaMetaName || null;
+        return;
+    }
 
     const metaId = document.querySelector('meta[name="checkin-manifest-id"]')?.getAttribute('content')?.trim();
     const metaName = document.querySelector('meta[name="checkin-manifest-name"]')?.getAttribute('content')?.trim();
@@ -108,7 +125,33 @@ function readManifestContext() {
     manifestId.value = q && q.length ? q : null;
 }
 
+async function fetchSaunaActive(silent = false) {
+    if (!silent) {
+        loading.value = true;
+    }
+    error.value = '';
+    try {
+        const { data } = await axios.get(`/api/sauna/${encodeURIComponent(saunaSlug.value)}/active`);
+        const active = data?.active_manifest;
+        manifestId.value = active?.manifest_id ?? null;
+        manifestName.value = active?.name ?? null;
+        bookings.value = Array.isArray(data?.bookings) ? data.bookings : [];
+    } catch (e) {
+        error.value =
+            e.response?.data?.message || e.message || 'Could not load bookings.';
+        bookings.value = [];
+    } finally {
+        if (!silent) {
+            loading.value = false;
+        }
+    }
+}
+
 async function fetchBookings(silent = false) {
+    if (saunaSlug.value) {
+        return fetchSaunaActive(silent);
+    }
+
     if (!silent) {
         loading.value = true;
     }

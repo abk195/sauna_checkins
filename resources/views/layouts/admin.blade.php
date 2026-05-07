@@ -319,6 +319,7 @@
             </div>
             <nav class="admin-nav">
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'is-active' : '' }}">Dashboard</a>
+                <a href="{{ route('admin.saunas.index') }}" class="{{ request()->routeIs('admin.saunas.*') ? 'is-active' : '' }}">Saunas</a>
                 <a href="{{ route('admin.manifests.index') }}" class="{{ request()->routeIs('admin.manifests.*') ? 'is-active' : '' }}">Manifests</a>
                 <a href="{{ route('admin.bookings.index') }}" class="{{ request()->routeIs('admin.bookings.*') ? 'is-active' : '' }}">Bookings</a>
                 <a href="{{ route('admin.checkin-users.index') }}" class="{{ request()->routeIs('admin.checkin-users.*') ? 'is-active' : '' }}">Checkin Users</a>
